@@ -1,10 +1,131 @@
 import 'package:baroni_app/LoginFlow/OtpPage.dart';
+import 'package:baroni_app/services/auth_service.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
-class ForgetPaaVerificationCodePage extends StatelessWidget {
+class ForgetPaaVerificationCodePage extends StatefulWidget {
   const ForgetPaaVerificationCodePage({super.key});
+
+  @override
+  State<ForgetPaaVerificationCodePage> createState() =>
+      _ForgetPaaVerificationCodePageState();
+}
+
+class _ForgetPaaVerificationCodePageState
+    extends State<ForgetPaaVerificationCodePage> {
+  String countryCode = "+91";
+  final TextEditingController _phoneController = TextEditingController();
+  bool _isChecking = false;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendCode() async {
+    if (_phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your phone number'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isChecking = true);
+    final fullPhone = "$countryCode${_phoneController.text.trim()}";
+
+    try {
+      // Check if phone number exists
+      final exists = await AuthService.instance.isPhoneNumberExists(fullPhone);
+
+      if (!exists) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Phone number not found! Please check your number or sign up.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+
+      // Phone number exists, start Firebase verification
+      await AuthService.instance.verifyPhoneNumber(
+        phoneNumber: fullPhone,
+        onVerificationFailed: (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Verification failed: ${e.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+        onVerificationCompleted: (cred) async {
+          try {
+            // Auto-verification completed, proceed to password reset
+            if (!mounted) return;
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpPage(
+                  verificationId: "auto",
+                  phoneNumber: fullPhone,
+                  isFan: true, // Default to fan for password reset
+                  email: null,
+                  password: "",
+                  isPasswordReset:
+                      true, // Flag to indicate this is password reset
+                ),
+              ),
+            );
+          } catch (err) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Auto verification failed. Please enter the code manually.'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        },
+        onCodeSent: (verificationId, resendToken) {
+          // Manual verification required
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpPage(
+                verificationId: verificationId,
+                phoneNumber: fullPhone,
+                isFan: true, // Default to fan for password reset
+                email: null,
+                password: "",
+                isPasswordReset:
+                    true, // Flag to indicate this is password reset
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isChecking = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +167,12 @@ class ForgetPaaVerificationCodePage extends StatelessWidget {
                 ],
               ),
 
-              // Back button with background color
-
-              // Title
-
               const SizedBox(height: 30),
 
               // Verification code heading
               const Center(
                 child: Text(
-                  "Verification Code",
+                  "Forgot Password",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -64,37 +181,30 @@ class ForgetPaaVerificationCodePage extends StatelessWidget {
               // Info text
               const Center(
                 child: Text(
-                  "We've sent an activation code to your mobile number:",
+                  "Enter your registered phone number to reset your password:",
                   style: TextStyle(fontSize: 14, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 5),
-
-              // Phone number in red
-              const Center(
-                child: Text(
-                  "+ 23 64356 75678",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               // Mobile number field
               TextField(
+                controller: _phoneController,
                 decoration: InputDecoration(
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Image.network(
-                      "https://flagcdn.com/w20/gb.png",
-                      width: 20,
-                    ),
+                  prefixIcon: CountryCodePicker(
+                    onChanged: (code) {
+                      setState(() {
+                        countryCode = code.dialCode ?? "+91";
+                      });
+                    },
+                    initialSelection: 'IN',
+                    favorite: ['+91', 'IN'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: false,
+                    padding: EdgeInsets.zero,
                   ),
-                  prefixText: "+44  ",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -116,15 +226,10 @@ class ForgetPaaVerificationCodePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const OtpPage()),
-                    );
-                  },
-                  child: const Text(
-                    "Send a code",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  onPressed: _isChecking ? null : _sendCode,
+                  child: Text(
+                    _isChecking ? "Sending..." : "Send Code",
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),

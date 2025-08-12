@@ -1,8 +1,12 @@
 import 'package:baroni_app/LoginFlow/PasswordresetSuccess.dart';
+import 'package:baroni_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewPassword extends StatefulWidget {
-  const CreateNewPassword({super.key});
+  const CreateNewPassword({Key? key, required this.phoneNumber})
+      : super(key: key);
+
+  final String phoneNumber;
 
   @override
   State<CreateNewPassword> createState() => _CreateNewPasswordScreenState();
@@ -11,10 +15,79 @@ class CreateNewPassword extends StatefulWidget {
 class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isUpdating = false;
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updatePassword() async {
+    if (_passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isUpdating = true);
+
+    try {
+      // Update password in database
+      final success = await AuthService.instance.updateUserPassword(
+        widget.phoneNumber,
+        _passwordController.text,
+      );
+
+      if (success) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PasswordResetSuccess(),
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update password. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating password: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +155,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
-                  hintText: "Password",
+                  hintText: "New Password",
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -108,7 +181,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                 controller: _confirmPasswordController,
                 obscureText: !_isConfirmPasswordVisible,
                 decoration: InputDecoration(
-                  hintText: "Confirm Password",
+                  hintText: "Confirm New Password",
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -129,7 +202,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
               ),
               const Spacer(),
 
-              // Log in button
+              // Update password button
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -140,16 +213,10 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PasswordResetSuccess()),
-                    );
-                  },
-                  child: const Text(
-                    "Log in",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  onPressed: _isUpdating ? null : _updatePassword,
+                  child: Text(
+                    _isUpdating ? "Updating..." : "Update Password",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),

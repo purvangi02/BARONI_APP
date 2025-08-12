@@ -1,4 +1,4 @@
-package com.example.baroni_app
+package com.baroni.app
 
 import io.flutter.embedding.android.FlutterActivity
 

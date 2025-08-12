@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "306451984630",
+    "project_id": "baroni-2025",
+    "storage_bucket": "baroni-2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306451984630:android:ae79e6554b2a55a172fcd7",
+        "android_client_info": {
+          "package_name": "com.baroni.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306451984630-cs7eg0cqm1bsb6jsmnhso04t2d8dn6m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwTIQcq4_2nETEpiJ9-SK9zBrcMuyzOo8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306451984630-cs7eg0cqm1bsb6jsmnhso04t2d8dn6m4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,7 @@
 import 'package:baroni_app/LoginFlow/PrivacypolicyPage.dart';
 import 'package:baroni_app/LoginFlow/SignInPage.dart';
+import 'package:baroni_app/services/auth_service.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -14,6 +16,82 @@ class _SignUpScreenState extends State<SignupPage> {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
   bool agreeTerms = false;
+  String countryCode = "+91";
+  bool _isChecking = false;
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _checkAndProceed() async {
+    if (!agreeTerms) return;
+    final raw = _phoneController.text.trim();
+    if (raw.isEmpty) return;
+    if (_passwordController.text.isEmpty) return;
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    setState(() => _isChecking = true);
+    final fullPhone = "$countryCode$raw";
+
+    try {
+      // Check if phone number already exists
+      final exists = await AuthService.instance.isPhoneNumberExists(fullPhone);
+
+      if (exists) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Phone number already registered! Please use a different number or sign in.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+
+      // Phone number is unique, proceed to privacy policy
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PrivacyPolicyPage(
+            phoneNumber: fullPhone,
+            isFan: isFan,
+            email: _emailController.text.trim().isEmpty
+                ? null
+                : _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error checking phone number: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isChecking = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +153,22 @@ class _SignUpScreenState extends State<SignupPage> {
 
               // Phone number
               TextField(
+                controller: _phoneController,
                 decoration: InputDecoration(
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Image.network(
-                      "https://flagcdn.com/w20/gb.png",
-                      width: 20,
-                    ),
+                  prefixIcon: CountryCodePicker(
+                    onChanged: (code) {
+                      setState(() {
+                        countryCode = code.dialCode ?? "+91";
+                      });
+                    },
+                    initialSelection: 'IN',
+                    favorite: ['+91', 'IN'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: false,
+                    padding: EdgeInsets.zero,
+                    // margin: EdgeInsets.zero,
                   ),
-                  prefixText: "+44  ",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -95,6 +180,7 @@ class _SignUpScreenState extends State<SignupPage> {
 
               // Email (Optional)
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.email_outlined),
                   border: OutlineInputBorder(
@@ -108,6 +194,7 @@ class _SignUpScreenState extends State<SignupPage> {
 
               // Password
               TextField(
+                controller: _passwordController,
                 obscureText: obscurePassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock_outline),
@@ -133,6 +220,7 @@ class _SignUpScreenState extends State<SignupPage> {
 
               // Confirm Password
               TextField(
+                controller: _confirmPasswordController,
                 obscureText: obscureConfirmPassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock_outline),
@@ -167,29 +255,10 @@ class _SignUpScreenState extends State<SignupPage> {
                       });
                     },
                   ),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        text: "I'm agree to The ",
-                        style: const TextStyle(color: Colors.black),
-                        children: [
-                          TextSpan(
-                            text: "Terms of Service",
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const TextSpan(text: " & "),
-                          TextSpan(
-                            text: "Privacy Policy",
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                  const Expanded(
+                    child: Text(
+                      "I'm agree to The Terms of Service & Privacy Policy",
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ],
@@ -207,18 +276,10 @@ class _SignUpScreenState extends State<SignupPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    if (agreeTerms) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PrivacyPolicyPage()),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  onPressed: _isChecking ? null : _checkAndProceed,
+                  child: Text(
+                    _isChecking ? "Checking..." : "Sign Up",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),
@@ -283,7 +344,6 @@ class _SignUpScreenState extends State<SignupPage> {
                   const Text("Do you have an account? "),
                   GestureDetector(
                     onTap: () {
-                      // Go to Sign In page
                       Navigator.push(
                         context,
                         MaterialPageRoute(
