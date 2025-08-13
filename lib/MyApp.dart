@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // use General Sans
-      theme: ThemeData(fontFamily: "Poppins"),
+      theme: ThemeData(fontFamily: "General Sans"),
 
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),

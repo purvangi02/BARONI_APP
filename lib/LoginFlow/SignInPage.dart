@@ -34,7 +34,7 @@ class _LoginScreenState extends State<SigninPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill all fields'),
-          backgroundColor: Colors.red,
+          backgroundColor: Color.fromRGBO(236, 34, 11, 1),
         ),
       );
       return;
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<SigninPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid phone number or password'),
-            backgroundColor: Colors.red,
+            backgroundColor: Color.fromRGBO(236, 34, 11, 1),
             duration: Duration(seconds: 3),
           ),
         );
@@ -115,28 +115,31 @@ class _LoginScreenState extends State<SigninPage> {
                   color: Colors.red,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
               // Fan / Star toggle
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    toggleButton("Fan", isFan, () {
-                      setState(() {
-                        isFan = true;
-                      });
-                    }),
-                    toggleButton("Star", !isFan, () {
-                      setState(() {
-                        isFan = false;
-                      });
-                    }),
-                  ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(252, 239, 241, 1),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      toggleButton("Fan", isFan, () {
+                        setState(() {
+                          isFan = true;
+                        });
+                      }),
+                      toggleButton("Star", !isFan, () {
+                        setState(() {
+                          isFan = false;
+                        });
+                      }),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 30),

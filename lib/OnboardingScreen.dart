@@ -1,5 +1,4 @@
 import 'package:baroni_app/LoginFlow/SignInPage.dart';
-
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -30,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       title: 'Get Custom Dedications',
       subtitle:
           'Request personalized video messages, greetings, and special dedications from the stars you love the most.',
-      imageAsset: 'assets/image/onboard_video_calls.png',
+      imageAsset: 'assets/image/onboard_dedications.png',
     ),
   ];
 
@@ -44,7 +43,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _finishOnboarding() {
-    // Navigate directly to Sign Up page
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const SigninPage()),
@@ -64,70 +62,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Text(
           'Baroni',
           style: TextStyle(
-            color: Colors.red.shade700,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
+            color: const Color.fromRGBO(236, 34, 11, 1),
+            fontSize: 36,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+            fontFamily: 'General Sans',
           ),
+          textAlign: TextAlign.center,
         ),
       ),
     );
-
-    // // Skip button only on first two pages
-    // if (_page < _pages.length - 1)
-    //   TextButton(
-    //     onPressed: _finishOnboarding,
-    //     child: const Text(
-    //       'Skip',
-    //       style: TextStyle(color: Colors.black54),
-    //     ),
-    //   ),
   }
 
   Widget _buildBottomBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Skip button (only show if not last page)
-          if (_page < _pages.length - 1)
-            TextButton(
-              onPressed: _finishOnboarding,
-              child: const Text(
-                'Skip',
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+      child: _page < _pages.length - 1
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: _finishOnboarding,
+                  child: const Text(
+                    'Skip',
+                    style: TextStyle(
+                      color: Color.fromARGB(98, 103, 109, 1),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
-            )
-          else
-            const SizedBox(width: 60), // keeps layout balanced when Skip hidden
-
-          // Right button
-          if (_page < _pages.length - 1)
-            // Small square icon button for Next
-            ElevatedButton(
-              onPressed: _goNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                ElevatedButton(
+                  onPressed: _goNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(236, 34, 11, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    minimumSize: const Size(48, 48),
+                    padding: EdgeInsets.zero,
+                    elevation: 4,
+                  ),
+                  child: Image.asset(
+                    'assets/image/next_aerrow.png',
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                minimumSize: const Size(48, 48), // square size
-                padding: EdgeInsets.zero,
-                elevation: 4,
-              ),
-              child: const Icon(Icons.arrow_forward, color: Colors.white),
+              ],
             )
-          else
-            // Large full-width Continue button
-            Expanded(
+          : SizedBox(
+              width: double.infinity, // full width
               child: ElevatedButton(
                 onPressed: _finishOnboarding,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade600,
+                  backgroundColor: const Color.fromRGBO(236, 34, 11, 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -138,14 +128,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: const Text(
                   'Continue',
                   style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-        ],
-      ),
     );
   }
 
@@ -169,11 +158,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final p = _pages[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 14.0),
                     child: Column(
                       children: [
                         const SizedBox(height: 6),
-                        // big illustration area
                         Expanded(
                           child: Center(
                             child: ClipRRect(
@@ -187,7 +175,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   child: Image.asset(
                                     p.imageAsset,
                                     fit: BoxFit.contain,
-                                    // Fallback in case image missing:
                                     errorBuilder: (context, error, stackTrace) {
                                       return const SizedBox(
                                         height: 240,
@@ -206,37 +193,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                           ),
                         ),
-
-                        const SizedBox(height: 18),
-                        // progress bar (thin)
-                        SizedBox(
-                          width: 80,
-                          child: LinearProgressIndicator(
-                            value: (index + 1) / _pages.length,
-                            color: Colors.red.shade600,
-                            backgroundColor: Colors.red.shade100,
-                            minHeight: 4,
-                          ),
+                        const SizedBox(height: 10),
+                        // Replaced LinearProgressIndicator with pill-dot indicator
+                        _DotIndicator(
+                          count: _pages.length,
+                          currentIndex: _page,
                         ),
-                        const SizedBox(height: 18),
-                        // Title
+                        const SizedBox(height: 16),
                         Text(
                           p.title,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromRGBO(0, 0, 0, 1),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        // Subtitle
+                        const SizedBox(height: 8),
                         Text(
                           p.subtitle,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
+                            fontSize: 16, //rgba(139, 148, 164, 1)
+                            color: Color.fromARGB(139, 148, 164, 1),
                           ),
                         ),
                         const SizedBox(height: 18),
@@ -278,25 +257,19 @@ class _DotIndicator extends StatelessWidget {
     const double dotSize = 8;
     const double spacing = 8;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
         final isActive = i == currentIndex;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           margin: EdgeInsets.only(right: i == count - 1 ? 0 : spacing),
-          width: isActive ? dotSize * 2.4 : dotSize,
+          width: isActive ? dotSize * 3 : dotSize,
           height: dotSize,
           decoration: BoxDecoration(
-            color: isActive ? Colors.red.shade600 : Colors.grey.shade300,
+            color: isActive
+                ? const Color.fromRGBO(236, 34, 11, 1)
+                : Colors.grey.shade300,
             borderRadius: BorderRadius.circular(8),
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: Colors.red.shade100,
-                      blurRadius: 6,
-                      spreadRadius: 1,
-                    )
-                  ]
-                : null,
           ),
         );
       }),
