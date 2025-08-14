@@ -1,6 +1,7 @@
 import 'package:baroni_app/LoginFlow/PrivacypolicyPage.dart';
-import 'package:baroni_app/LoginFlow/SignInPage.dart';
+import 'package:baroni_app/LoginFlow/sign_in/page/signIn_page.dart';
 import 'package:baroni_app/services/auth_service.dart';
+import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -96,6 +97,7 @@ class _SignUpScreenState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -118,7 +120,7 @@ class _SignUpScreenState extends State<SignupPage> {
               // Fan / Star Toggle
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  color: const Color(0xffFBFBFB),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Row(
@@ -141,12 +143,12 @@ class _SignUpScreenState extends State<SignupPage> {
 
               // Get Started text
               Row(
-                children: const [
+                children:  [
                   Text(
                     "Get Started ",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w400),
                   ),
-                  Text("•", style: TextStyle(color: Colors.red, fontSize: 22)),
+                  Text("•", style: TextStyle(color: AppColors.primaryColor, fontSize: 22)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -169,8 +171,24 @@ class _SignUpScreenState extends State<SignupPage> {
                     padding: EdgeInsets.zero,
                     // margin: EdgeInsets.zero,
                   ),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                   hintText: "Enter your mobile number",
                 ),
@@ -183,8 +201,24 @@ class _SignUpScreenState extends State<SignupPage> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                   hintText: "Email Address (Optional)",
                 ),
@@ -210,8 +244,24 @@ class _SignUpScreenState extends State<SignupPage> {
                       });
                     },
                   ),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                   hintText: "Password",
                 ),
@@ -236,8 +286,25 @@ class _SignUpScreenState extends State<SignupPage> {
                       });
                     },
                   ),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                   hintText: "Confirm Password",
                 ),
@@ -249,18 +316,34 @@ class _SignUpScreenState extends State<SignupPage> {
                 children: [
                   Checkbox(
                     value: agreeTerms,
+                    // fillColor: MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.06)),
+                    overlayColor:
+                    MaterialStateProperty.all<Color>(AppColors.primaryColor),
+                    activeColor: AppColors.primaryColor,
                     onChanged: (value) {
                       setState(() {
                         agreeTerms = value ?? false;
                       });
                     },
                   ),
-                  const Expanded(
-                    child: Text(
-                      "I'm agree to The Terms of Service & Privacy Policy",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
+                  RichText(text: TextSpan(
+                    children: [
+                      TextSpan(text: 'I agree to ', style: TextStyle(color: AppColors.blackColor,fontSize: 14,fontWeight: FontWeight.w500),),
+                      TextSpan(text: 'The Terms of Service',style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500
+                      )),
+                      TextSpan(text: ' & ',style: TextStyle(color: Colors.black,fontSize: 14,fontWeight: FontWeight.w500)),
+                      TextSpan(text: 'Privacy Policy',style: TextStyle(color: AppColors.primaryColor,fontSize: 14,fontWeight: FontWeight.w500)),
+                    ]
+                  )),
+                  // const Expanded(
+                  //   child: Text(
+                  //     "I'm agree to The Terms of Service & Privacy Policy",
+                  //     style: TextStyle(color: Colors.black),
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -271,7 +354,7 @@ class _SignUpScreenState extends State<SignupPage> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -279,7 +362,7 @@ class _SignUpScreenState extends State<SignupPage> {
                   onPressed: _isChecking ? null : _checkAndProceed,
                   child: Text(
                     _isChecking ? "Checking..." : "Sign Up",
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w600, color: Colors.white),
                   ),
                 ),
               ),
@@ -289,12 +372,12 @@ class _SignUpScreenState extends State<SignupPage> {
               // Divider
               Row(
                 children: [
-                  Expanded(child: Divider(thickness: 1)),
+                  Expanded(child: Divider(thickness: 1,color: AppColors.greyED,)),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     child: Text("Or"),
                   ),
-                  Expanded(child: Divider(thickness: 1)),
+                  Expanded(child: Divider(thickness: 1,color: AppColors.greyED,)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -350,10 +433,10 @@ class _SignUpScreenState extends State<SignupPage> {
                             builder: (context) => const SigninPage()),
                       );
                     },
-                    child: const Text(
+                    child:  Text(
                       "Sign In",
                       style: TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
+                          color: AppColors.primaryColor, fontWeight: FontWeight.bold),
                     ),
                   )
                 ],
@@ -371,9 +454,11 @@ class _SignUpScreenState extends State<SignupPage> {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+        margin: EdgeInsets.all(2),
         decoration: BoxDecoration(
-          color: active ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
+            color: active ? Color(0xffFCEFF1) : Colors.transparent,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: active ? Colors.white : Colors.transparent)
         ),
         child: Text(
           text,

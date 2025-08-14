@@ -1,4 +1,4 @@
-import 'package:baroni_app/LoginFlow/SignInPage.dart';
+import 'package:baroni_app/LoginFlow/sign_in/page/signIn_page.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
