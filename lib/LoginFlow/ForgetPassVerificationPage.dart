@@ -30,6 +30,7 @@ class _ForgetPaaVerificationCodePageState
         const SnackBar(
           content: Text('Please enter your phone number'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -50,6 +51,7 @@ class _ForgetPaaVerificationCodePageState
                 'Phone number not found! Please check your number or sign up.'),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
           ),
         );
         return;
@@ -64,6 +66,7 @@ class _ForgetPaaVerificationCodePageState
             SnackBar(
               content: Text('Verification failed: ${e.message}'),
               backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
             ),
           );
         },
@@ -92,6 +95,7 @@ class _ForgetPaaVerificationCodePageState
                 content: Text(
                     'Auto verification failed. Please enter the code manually.'),
                 backgroundColor: Colors.orange,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           }
@@ -121,6 +125,7 @@ class _ForgetPaaVerificationCodePageState
         SnackBar(
           content: Text('Error: $e'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } finally {

@@ -45,6 +45,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
         const SnackBar(
           content: Text('Passwords do not match'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -73,6 +74,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
           const SnackBar(
             content: Text('Failed to update password. Please try again.'),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -82,6 +84,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
         SnackBar(
           content: Text('Error updating password: $e'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } finally {

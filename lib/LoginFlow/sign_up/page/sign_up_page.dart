@@ -52,7 +52,7 @@ class _SignUpScreenState extends State<SignupPage> {
     if (_passwordController.text.isEmpty) return;
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(content: Text('Passwords do not match'),behavior: SnackBarBehavior.floating,),
       );
       return;
     }
@@ -77,6 +77,7 @@ class _SignUpScreenState extends State<SignupPage> {
               const SnackBar(
                 content: Text('Registered. OTP sent to contact for verification'),
                 backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
               ),
             );
             // Navigate to PrivacyPolicyPage after registration
@@ -98,6 +99,7 @@ class _SignUpScreenState extends State<SignupPage> {
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           }
@@ -239,11 +241,7 @@ class _SignUpScreenState extends State<SignupPage> {
                     decoration: InputDecoration(
                       prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          obscurePassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
+                        icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                         onPressed: () {
                           setState(() {
                             obscurePassword = !obscurePassword;
@@ -281,11 +279,7 @@ class _SignUpScreenState extends State<SignupPage> {
                     decoration: InputDecoration(
                       prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          obscureConfirmPassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
+                          icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                         onPressed: () {
                           setState(() {
                             obscureConfirmPassword = !obscureConfirmPassword;

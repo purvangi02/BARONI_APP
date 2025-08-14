@@ -8,6 +8,7 @@ class AppAssets {
   static const String smsIcon = 'assets/icons/sms.png';
   static const String googleIcon = 'assets/icons/google_icon.png';
   static const String appleIcon = 'assets/icons/apple_icon.png';
+  static const String eyeOffIcon = 'assets/icons/eye_off.png';
 
   // Add more assets as needed
 }

@@ -102,7 +102,7 @@ late OtpVerificationCubit _cubit;
         } else {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid code. Please enter 1234.')),
+            const SnackBar(content: Text('Invalid code. Please enter 1234.'),behavior: SnackBarBehavior.floating,),
           );
         }
       } else {
@@ -159,6 +159,7 @@ late OtpVerificationCubit _cubit;
         SnackBar(
           content: Text('Verification failed: $e'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } finally {
@@ -201,7 +202,7 @@ late OtpVerificationCubit _cubit;
           } else if (state is OtpVerificationFailure) {
             setState(() => _submitting = false);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message),behavior: SnackBarBehavior.floating,),
             );
           }
         },

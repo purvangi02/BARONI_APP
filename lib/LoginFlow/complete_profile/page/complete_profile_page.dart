@@ -93,7 +93,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
           } else if (state is CompleteProfileFailure) {
             setState(() => _isSaving = false);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message),behavior: SnackBarBehavior.floating,),
             );
           }
         },

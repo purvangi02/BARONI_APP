@@ -21,7 +21,7 @@ class ApiService {
       final data = jsonDecode(response.body);
       return data;
     }
-    return null;
+    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>?> register({

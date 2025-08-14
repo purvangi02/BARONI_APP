@@ -45,13 +45,14 @@ class _LoginScreenState extends State<SigninPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill all fields'),
+          behavior: SnackBarBehavior.floating,
           backgroundColor: Color.fromRGBO(236, 34, 11, 1),
         ),
       );
       return;
     }
-    // final fullPhone = "$countryCode${_phoneController.text.trim()}";
-    final fullPhone = _phoneController.text.trim();
+    final fullPhone = "$countryCode${_phoneController.text.trim()}";
+    // final fullPhone = _phoneController.text.trim();
     _signInCubit.login(fullPhone, _passwordController.text);
   }
 
@@ -71,7 +72,8 @@ class _LoginScreenState extends State<SigninPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.errorColor,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           }
@@ -187,11 +189,7 @@ class _LoginScreenState extends State<SigninPage> {
                       decoration: InputDecoration(
                         prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            obscurePassword
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                          ),
+                          icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                           onPressed: () {
                             setState(() {
                               obscurePassword = !obscurePassword;

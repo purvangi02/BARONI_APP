@@ -19,7 +19,7 @@ class SignInCubit extends Cubit<SignInState> {
         await prefs.setString('refreshToken', tokens['refreshToken']);
         emit(SignInSuccess(response['data']));
       } else {
-        emit(SignInFailure('Invalid phone number or password'));
+        emit(SignInFailure(response?['message']));
       }
     } catch (e) {
       emit(SignInFailure('Error: $e'));
