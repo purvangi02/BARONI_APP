@@ -12,7 +12,7 @@ class ApiService {
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'contact': contact, 'password': password}),
+      body: jsonEncode({'contact': contact, 'password': password,'isMobile': true}),
     );
     log(contact);
     log(response.body);
@@ -105,6 +105,25 @@ class ApiService {
     final response = await http.Response.fromStream(streamedResponse);
     log(response.body);
 
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    }
+    return null;
+  }
+
+  static Future<Map<String, dynamic>?> resetPassword({
+    required String contact,
+    required String newPassword,
+  }) async {
+    final url = Uri.parse('$baseUrl/auth/forgot-password');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'contact': contact, 'newPassword': newPassword}),
+    );
+    log(contact);
+    log(response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data;

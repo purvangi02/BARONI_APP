@@ -1,4 +1,3 @@
-import 'package:baroni_app/LoginFlow/otp_verification/page/OtpPage.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -85,39 +84,6 @@ class PrivacyPolicyPage extends StatelessWidget {
                             color: AppColors.grey76, fontSize: 14, height: 1.5),
                       ),
                     ],
-                  ),
-                ),
-              ),
-
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () async {
-                    // Go to OTP page after privacy policy acceptance
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OtpPage(
-                          verificationId: '', // Not used for backend OTP
-                          phoneNumber: phoneNumber,
-                          isFan: isFan,
-                          email: email,
-                          password: password,
-                          userId: userId,
-                        ),
-                      ),
-                    );
-                  },
-                  child:  Text(
-                    "Next",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),

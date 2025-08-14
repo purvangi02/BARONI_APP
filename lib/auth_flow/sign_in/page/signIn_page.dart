@@ -1,13 +1,12 @@
-import 'package:baroni_app/LoginFlow/ForgetPassVerificationPage.dart';
-import 'package:baroni_app/LoginFlow/sign_up/page/sign_up_page.dart';
+import 'package:baroni_app/auth_flow/ForgetPassVerificationPage.dart';
+import 'package:baroni_app/auth_flow/sign_up/page/sign_up_page.dart';
 import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
-import 'package:baroni_app/services/auth_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:baroni_app/LoginFlow/sign_in/bloc/sign_in_cubit.dart';
+import 'package:baroni_app/auth_flow/sign_in/bloc/sign_in_cubit.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -19,7 +18,6 @@ class SigninPage extends StatefulWidget {
 class _LoginScreenState extends State<SigninPage> {
   bool isFan = true;
   bool obscurePassword = true;
-  bool _isSigningIn = false;
   String countryCode = "+91";
 
   final TextEditingController _phoneController = TextEditingController();

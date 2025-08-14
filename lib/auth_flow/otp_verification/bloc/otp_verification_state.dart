@@ -16,3 +16,5 @@ final class OtpVerificationFailure extends OtpVerificationState {
   final String message;
   OtpVerificationFailure(this.message);
 }
+
+// This file is no longer used in the sign up flow and can be deleted or ignored.

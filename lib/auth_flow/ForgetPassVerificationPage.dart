@@ -1,8 +1,9 @@
-import 'package:baroni_app/LoginFlow/otp_verification/page/OtpPage.dart';
+import 'package:baroni_app/auth_flow/otp_verification/page/OtpPage.dart';
 import 'package:baroni_app/services/auth_service.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:baroni_app/auth_flow/change_password/page/CreateNewPasswordPage.dart';
 
 class ForgetPaaVerificationCodePage extends StatefulWidget {
   const ForgetPaaVerificationCodePage({super.key});
@@ -41,27 +42,28 @@ class _ForgetPaaVerificationCodePageState
 
     try {
       // Check if phone number exists
-      final exists = await AuthService.instance.isPhoneNumberExists(fullPhone);
+      // final exists = await AuthService.instance.isPhoneNumberExists(fullPhone);
 
-      if (!exists) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Phone number not found! Please check your number or sign up.'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
+      // if (!exists) {
+      //   if (!mounted) return;
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text(
+      //           'Phone number not found! Please check your number or sign up.'),
+      //       backgroundColor: Colors.red,
+      //       duration: Duration(seconds: 4),
+      //       behavior: SnackBarBehavior.floating,
+      //     ),
+      //   );
+      //   return;
+      // }
 
       // Phone number exists, start Firebase verification
       await AuthService.instance.verifyPhoneNumber(
         phoneNumber: fullPhone,
         onVerificationFailed: (e) {
           if (!mounted) return;
+          setState(() => _isChecking = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Verification failed: ${e.message}'),
@@ -70,57 +72,41 @@ class _ForgetPaaVerificationCodePageState
             ),
           );
         },
-        onVerificationCompleted: (cred) async {
-          try {
-            // Auto-verification completed, proceed to password reset
-            if (!mounted) return;
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpPage(
-                  verificationId: "auto",
-                  phoneNumber: fullPhone,
-                  isFan: true, // Default to fan for password reset
-                  email: null,
-                  password: "",
-                  isPasswordReset:
-                      true, // Flag to indicate this is password reset
-                ),
-              ),
-            );
-          } catch (err) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'Auto verification failed. Please enter the code manually.'),
-                backgroundColor: Colors.orange,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
+        onVerificationCompleted: null,
         onCodeSent: (verificationId, resendToken) {
-          // Manual verification required
           if (!mounted) return;
-          Navigator.pushReplacement(
+          setState(() => _isChecking = false);
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => OtpPage(
                 verificationId: verificationId,
                 phoneNumber: fullPhone,
-                isFan: true, // Default to fan for password reset
+                isFan: true,
                 email: null,
                 password: "",
-                isPasswordReset:
-                    true, // Flag to indicate this is password reset
+                isPasswordReset: true,
+                onOtpVerified: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CreateNewPassword(
+                        phoneNumber: fullPhone,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           );
         },
+        onCodeAutoRetrievalTimeout: () {
+          setState(() => _isChecking = false);
+        },
       );
     } catch (e) {
       if (!mounted) return;
+      setState(() => _isChecking = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
@@ -128,8 +114,6 @@ class _ForgetPaaVerificationCodePageState
           behavior: SnackBarBehavior.floating,
         ),
       );
-    } finally {
-      if (mounted) setState(() => _isChecking = false);
     }
   }
 

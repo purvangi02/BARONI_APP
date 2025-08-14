@@ -1,5 +1,5 @@
-import 'package:baroni_app/LoginFlow/PrivacypolicyPage.dart';
-import 'package:baroni_app/LoginFlow/sign_in/page/signIn_page.dart';
+import 'package:baroni_app/auth_flow/complete_profile/page/complete_profile_page.dart';
+import 'package:baroni_app/auth_flow/sign_in/page/signIn_page.dart';
 import 'package:baroni_app/services/auth_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
@@ -7,6 +7,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/sign_up_cubit.dart';
+import 'package:baroni_app/auth_flow/otp_verification/page/OtpPage.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -29,6 +30,7 @@ class _SignUpScreenState extends State<SignupPage> {
       TextEditingController();
   late SignUpCubit _signUpCubit;
 
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +47,7 @@ class _SignUpScreenState extends State<SignupPage> {
     super.dispose();
   }
 
-  Future<void> _checkAndProceed() async {
+  Future<void> _sendOtpAndProceed() async {
     if (!agreeTerms) return;
     final raw = _phoneController.text.trim();
     if (raw.isEmpty) return;
@@ -56,15 +58,50 @@ class _SignUpScreenState extends State<SignupPage> {
       );
       return;
     }
-
     final fullPhone = "$countryCode$raw";
-    _signUpCubit.register(
-      contact: fullPhone,
-      password: _passwordController.text,
-      email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+    setState(() => _isChecking = true);
+    await AuthService.instance.verifyPhoneNumber(
+      phoneNumber: fullPhone,
+      onCodeSent: (verificationId, resendToken) {
+        setState(() {
+          _isChecking = false;
+        });
+        // Navigate to OTP verification screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpPage(
+              verificationId: verificationId,
+              phoneNumber: fullPhone,
+              isFan: isFan,
+              email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+              password: _passwordController.text,
+              isPasswordReset: false,
+              onOtpVerified: () {
+                // After OTP verified, call registration API
+                _signUpCubit.register(
+                  contact: fullPhone,
+                  password: _passwordController.text,
+                  email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+                );
+              },
+            ),
+          ),
+        );
+      },
+      onVerificationFailed: (e) {
+        setState(() => _isChecking = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP send failed: ${e.message}'),behavior: SnackBarBehavior.floating,),
+        );
+      },
+      onVerificationCompleted: null,
+      onCodeAutoRetrievalTimeout: () {
+        setState(() => _isChecking = false);
+      },
     );
-
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -75,22 +112,19 @@ class _SignUpScreenState extends State<SignupPage> {
           if (state is SignUpSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Registered. OTP sent to contact for verification'),
+                content: Text('Registration successful!'),
                 backgroundColor: Colors.green,
                 behavior: SnackBarBehavior.floating,
               ),
             );
-            // Navigate to PrivacyPolicyPage after registration
-            final userId = state.data['id'] ?? '';
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => PrivacyPolicyPage(
-                  phoneNumber: "${countryCode}${_phoneController.text.trim()}",
+                builder: (context) => CompleteProfilePage(
+                  phoneNumber: "$countryCode${_phoneController.text.trim()}",
                   isFan: isFan,
                   email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
                   password: _passwordController.text,
-                  userId: userId,
                 ),
               ),
             );
@@ -398,7 +432,7 @@ class _SignUpScreenState extends State<SignupPage> {
                     height: 50,
                     child: BlocBuilder<SignUpCubit, SignUpState>(
                       builder: (context, state) {
-                        final isLoading = state is SignUpLoading;
+                        final isLoading = state is SignUpLoading || _isChecking;
                         return ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
@@ -406,7 +440,7 @@ class _SignUpScreenState extends State<SignupPage> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: isLoading ? null : _checkAndProceed,
+                          onPressed: isLoading ? null : _sendOtpAndProceed,
                           child: Text(
                             isLoading ? "Checking..." : "Sign Up",
                             style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w600, color: Colors.white),

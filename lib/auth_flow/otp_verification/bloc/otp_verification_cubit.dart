@@ -36,3 +36,5 @@ class OtpVerificationCubit extends Cubit<OtpVerificationState> {
     }
   }
 }
+
+// This file is no longer used in the sign up flow and can be deleted or ignored.

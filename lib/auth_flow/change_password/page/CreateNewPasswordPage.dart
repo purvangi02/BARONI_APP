@@ -1,5 +1,7 @@
-import 'package:baroni_app/LoginFlow/PasswordresetSuccess.dart';
-import 'package:baroni_app/services/auth_service.dart';
+import 'package:baroni_app/auth_flow/PasswordresetSuccess.dart';
+import 'package:baroni_app/uttils/app_assets.dart';
+import 'package:baroni_app/uttils/app_colors.dart';
+import 'package:baroni_app/uttils/api_service.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewPassword extends StatefulWidget {
@@ -54,13 +56,11 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
     setState(() => _isUpdating = true);
 
     try {
-      // Update password in database
-      final success = await AuthService.instance.updateUserPassword(
-        widget.phoneNumber,
-        _passwordController.text,
+      final res = await ApiService.resetPassword(
+        contact: widget.phoneNumber,
+        newPassword: _passwordController.text,
       );
-
-      if (success) {
+      if (res != null && res['success'] == true) {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
@@ -71,8 +71,8 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update password. Please try again.'),
+          SnackBar(
+            content: Text(res?['message'] ?? 'Failed to update password'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -111,14 +111,14 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      icon:  Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                   ),
                   SizedBox(
-                    width: 100,
+                    width: 80,
                   ),
                   Center(
                     child: Text(
@@ -126,7 +126,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                   ),
@@ -139,16 +139,16 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
               const Center(
                 child: Text(
                   "Create new password",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w400),
                 ),
               ),
               const SizedBox(height: 8),
 
-              const Center(
+               Center(
                 child: Text(
                   "Reset your password in seconds and get\nback to your Baroni journey.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: AppColors.grey6D),
                 ),
               ),
               const SizedBox(height: 30),
@@ -159,21 +159,34 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   hintText: "New Password",
-                  prefixIcon: const Icon(Icons.lock_outline),
+                  prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
+                    icon: Image.asset(_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
                       });
                     },
                   ),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                 ),
               ),
@@ -185,21 +198,34 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                 obscureText: !_isConfirmPasswordVisible,
                 decoration: InputDecoration(
                   hintText: "Confirm New Password",
-                  prefixIcon: const Icon(Icons.lock_outline),
+                  prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                      _isConfirmPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
+                    icon: Image.asset(_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                     onPressed: () {
                       setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        _isPasswordVisible = !_isPasswordVisible;
                       });
                     },
                   ),
-                  border: OutlineInputBorder(
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                 ),
               ),
@@ -211,7 +237,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

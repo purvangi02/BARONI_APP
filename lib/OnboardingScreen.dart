@@ -1,6 +1,7 @@
-import 'package:baroni_app/LoginFlow/sign_in/page/signIn_page.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:flutter/material.dart';
+
+import 'auth_flow/sign_in/page/signIn_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

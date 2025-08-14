@@ -1,4 +1,6 @@
 import 'package:baroni_app/uttils/app_colors.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
@@ -36,12 +38,14 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   final TextEditingController _pseudoController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  late CompleteProfileCubit _completeProfileCubit;
 
   @override
   void initState() {
     super.initState();
     _emailController.text = widget.email ?? '';
     _phoneController.text = widget.phoneNumber;
+    _completeProfileCubit = CompleteProfileCubit();
   }
 
   @override
@@ -50,6 +54,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     _pseudoController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _completeProfileCubit.close();
     super.dispose();
   }
 
@@ -64,7 +69,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   }
 
   void _submitProfile() {
-    context.read<CompleteProfileCubit>().submitProfile(
+    _completeProfileCubit.submitProfile(
       name: _nameController.text.trim(),
       pseudo: _pseudoController.text.trim(),
       profilePic: _profileImage,
@@ -78,7 +83,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CompleteProfileCubit(),
+      create: (_) => _completeProfileCubit,
       child: BlocListener<CompleteProfileCubit, CompleteProfileState>(
         listener: (context, state) {
           if (state is CompleteProfileLoading) {
@@ -123,15 +128,22 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                   const SizedBox(height: 20),
 
                   // Profile Image
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.grey.shade300,
-                      backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                      child: _profileImage == null
-                          ? const Icon(Icons.camera_alt_outlined, size: 35, color: Colors.grey)
-                          : null,
+
+                  DottedBorder(
+                    borderType: BorderType.Circle,
+                    color: AppColors.greyD1,
+                    dashPattern: [6, 3], // 6px line, 3px gap
+                    strokeWidth: 2,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 80,
+                        backgroundColor: Colors.grey.shade300,
+                        backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                        child: _profileImage == null
+                            ? const Icon(Icons.camera_alt_outlined, size: 35, color: Colors.grey)
+                            : null,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -207,21 +219,18 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.flag_outlined, color: Colors.grey),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: CountryCodePicker(
-                            onChanged: (code) {
-                              setState(() {
-                                countryCode = code.dialCode ?? '+91';
-                                countryName = code.name ?? 'India';
-                              });
-                            },
-                            initialSelection: 'IN',
-                            favorite: ['+91', 'IN'],
-                            showCountryOnly: true,
-                            showOnlyCountryWhenClosed: true,
-                          ),
+                         Icon(Icons.location_on_rounded, color: Colors.grey),
+                        CountryCodePicker(
+                          onChanged: (code) {
+                            setState(() {
+                              countryCode = code.dialCode ?? '+91';
+                              countryName = code.name ?? 'India';
+                            });
+                          },
+                          initialSelection: 'IN',
+                          favorite: ['+91', 'IN'],
+                          showCountryOnly: true,
+                          showOnlyCountryWhenClosed: true,
                         ),
                       ],
                     ),
@@ -269,10 +278,21 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       hintText: hint,
       filled: true,
       fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      border: OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderSide:  BorderSide(
+          color: AppColors.greyF4, // Default border color
+          width: 1,
+        ),
+      ),
+
+      // Border when focused
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide:  BorderSide(
+          color: AppColors.greyF4, // Default border color
+          width: 1,
+        ),
       ),
     );
   }
