@@ -1,4 +1,5 @@
 import 'package:baroni_app/LoginFlow/sign_in/page/signIn_page.dart';
+import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -83,10 +84,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               children: [
                 TextButton(
                   onPressed: _finishOnboarding,
-                  child: const Text(
+                  child:  Text(
                     'Skip',
                     style: TextStyle(
-                      color: Color.fromARGB(98, 103, 109, 1),
+                      color: AppColors.grey6D,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -95,9 +96,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ElevatedButton(
                   onPressed: _goNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(236, 34, 11, 1),
+                    backgroundColor: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     minimumSize: const Size(48, 48),
                     padding: EdgeInsets.zero,
@@ -167,7 +168,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
                               child: Container(
-                                color: Colors.grey[100],
                                 padding: const EdgeInsets.all(12),
                                 child: ConstrainedBox(
                                   constraints: const BoxConstraints(
@@ -203,19 +203,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           p.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                            color: Color.fromRGBO(0, 0, 0, 1),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.blackColor,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           p.subtitle,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16, //rgba(139, 148, 164, 1)
-                            color: Color.fromARGB(139, 148, 164, 1),
+                          style:  TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.greyA4,
                           ),
                         ),
                         const SizedBox(height: 18),
@@ -254,7 +255,7 @@ class _DotIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double dotSize = 8;
+    const double dotSize = 6;
     const double spacing = 8;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -263,12 +264,12 @@ class _DotIndicator extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           margin: EdgeInsets.only(right: i == count - 1 ? 0 : spacing),
-          width: isActive ? dotSize * 3 : dotSize,
+          width: isActive ? dotSize * 8 : 10,
           height: dotSize,
           decoration: BoxDecoration(
             color: isActive
-                ? const Color.fromRGBO(236, 34, 11, 1)
-                : Colors.grey.shade300,
+                ?  AppColors.primaryColor
+                : AppColors.greyD9,
             borderRadius: BorderRadius.circular(8),
           ),
         );

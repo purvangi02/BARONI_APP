@@ -1,6 +1,5 @@
-import 'package:baroni_app/LoginFlow/OtpPage.dart';
-import 'package:baroni_app/services/auth_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:baroni_app/LoginFlow/otp_verification/page/OtpPage.dart';
+import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
@@ -9,12 +8,14 @@ class PrivacyPolicyPage extends StatelessWidget {
       required this.phoneNumber,
       required this.isFan,
       this.email,
-      required this.password});
+      required this.password,
+      required this.userId});
 
   final String phoneNumber;
   final bool isFan;
   final String? email;
   final String password;
+  final String userId;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      icon:  Icon(Icons.arrow_back_ios_new,size: 15, color: Colors.black),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -43,13 +44,13 @@ class PrivacyPolicyPage extends StatelessWidget {
                   SizedBox(
                     width: 50,
                   ),
-                  const Expanded(
+                   Expanded(
                     child: Text(
                       "Privacy Policy",
                       style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryColor,
                       ),
                     ),
                   ),
@@ -63,17 +64,17 @@ class PrivacyPolicyPage extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children:  [
                       Text(
                         "My Website one of our main priorities is the privacy of our visitors. "
                         "This Privacy Policy document contains types of information that is collected and recorded by My Website and how we use it.\n",
                         style: TextStyle(
-                            color: Colors.black87, fontSize: 14, height: 1.5),
+                            color: AppColors.grey76, fontSize: 14, height: 1.5),
                       ),
                       Text(
                         "If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us.\n",
                         style: TextStyle(
-                            color: Colors.black87, fontSize: 14, height: 1.5),
+                            color: AppColors.grey76, fontSize: 14, height: 1.5),
                       ),
                       Text(
                         "This privacy policy applies only to our online activities and is valid for visitors to our website "
@@ -81,7 +82,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                         "to any information collected offline or via channels other than this website. Consent\n"
                         "By using our website, you hereby consent to ",
                         style: TextStyle(
-                            color: Colors.black87, fontSize: 14, height: 1.5),
+                            color: AppColors.grey76, fontSize: 14, height: 1.5),
                       ),
                     ],
                   ),
@@ -93,97 +94,29 @@ class PrivacyPolicyPage extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () async {
-                    try {
-                      // Start phone verification
-                      await AuthService.instance.verifyPhoneNumber(
-                        phoneNumber: phoneNumber,
-                        onVerificationFailed: (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Verification failed: ${e.message}'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        },
-                        onVerificationCompleted: (cred) async {
-                          try {
-                            // Auto-verification completed
-                            final userCred =
-                                await AuthService.instance.createUserWithPhone(
-                              verificationId: "auto",
-                              smsCode: "auto",
-                            );
-
-                            // Save user profile
-                            await AuthService.instance.saveUserProfile({
-                              'uid': userCred.user!.uid,
-                              'phoneNumber': phoneNumber,
-                              'email': email,
-                              'password': password,
-                              'role': isFan ? 'fan' : 'star',
-                              'createdAt': FieldValue.serverTimestamp(),
-                              'updatedAt': FieldValue.serverTimestamp(),
-                            });
-
-                            if (context.mounted) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OtpPage(
-                                    verificationId: "auto",
-                                    phoneNumber: phoneNumber,
-                                    isFan: isFan,
-                                    email: email,
-                                    password: password,
-                                  ),
-                                ),
-                              );
-                            }
-                          } catch (err) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Auto verification failed. Please enter the code manually.'),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                            }
-                          }
-                        },
-                        onCodeSent: (verificationId, resendToken) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OtpPage(
-                                verificationId: verificationId,
-                                phoneNumber: phoneNumber,
-                                isFan: isFan,
-                                email: email,
-                                password: password,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: $e'),
-                          backgroundColor: Colors.red,
+                    // Go to OTP page after privacy policy acceptance
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OtpPage(
+                          verificationId: '', // Not used for backend OTP
+                          phoneNumber: phoneNumber,
+                          isFan: isFan,
+                          email: email,
+                          password: password,
+                          userId: userId,
                         ),
-                      );
-                    }
+                      ),
+                    );
                   },
-                  child: const Text(
-                    "Sign Up",
+                  child:  Text(
+                    "Next",
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),

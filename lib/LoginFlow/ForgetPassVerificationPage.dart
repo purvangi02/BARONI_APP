@@ -1,5 +1,6 @@
-import 'package:baroni_app/LoginFlow/OtpPage.dart';
+import 'package:baroni_app/LoginFlow/otp_verification/page/OtpPage.dart';
 import 'package:baroni_app/services/auth_service.dart';
+import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -205,8 +206,27 @@ class _ForgetPaaVerificationCodePageState
                     alignLeft: false,
                     padding: EdgeInsets.zero,
                   ),
-                  border: OutlineInputBorder(
+                  hintStyle: TextStyle(
+                      fontSize: 14,fontWeight: FontWeight.w400,
+                      color: AppColors.grey6D
+                  ),
+
+                  // Normal border
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
+                  ),
+
+                  // Border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:  BorderSide(
+                      color: AppColors.greyF4, // Default border color
+                      width: 1,
+                    ),
                   ),
                   hintText: "Enter your mobile number",
                 ),

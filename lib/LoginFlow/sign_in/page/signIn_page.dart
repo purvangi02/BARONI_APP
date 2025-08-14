@@ -1,7 +1,8 @@
 import 'package:baroni_app/LoginFlow/ForgetPassVerificationPage.dart';
-import 'package:baroni_app/LoginFlow/SignupPage.dart';
+import 'package:baroni_app/LoginFlow/sign_up/page/sign_up_page.dart';
 import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/services/auth_service.dart';
+import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
@@ -184,7 +185,7 @@ class _LoginScreenState extends State<SigninPage> {
                       controller: _passwordController,
                       obscureText: obscurePassword,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                         suffixIcon: IconButton(
                           icon: Icon(
                             obscurePassword
@@ -244,7 +245,7 @@ class _LoginScreenState extends State<SigninPage> {
                       ),
                     ),
                 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 14),
                 
                     // Sign In button
                     BlocBuilder<SignInCubit, SignInState>(
@@ -300,7 +301,7 @@ class _LoginScreenState extends State<SigninPage> {
                           ),
                           child: Center(
                             child: Image.asset(
-                              "assets/image/apple_icon.png",
+                              AppAssets.appleIcon,
                               height: 24,
                             ),
                           ),
@@ -315,7 +316,7 @@ class _LoginScreenState extends State<SigninPage> {
                           ),
                           child: Center(
                             child: Image.asset(
-                              "assets/image/google_icon.png",
+                              AppAssets.googleIcon,
                               height: 24,
                             ),
                           ),

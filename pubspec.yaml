@@ -46,6 +46,7 @@ dependencies:
   shared_preferences: ^2.5.3
   bloc: ^9.0.0
   flutter_bloc: ^9.1.1
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
     - assets/image/google_icon.png
     - assets/image/passwordsuccess.png
     - assets/image/next_aerrow.png
+    - assets/icons/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
