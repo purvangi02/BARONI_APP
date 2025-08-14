@@ -4,9 +4,12 @@ import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:baroni_app/auth_flow/sign_in/bloc/sign_in_cubit.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -23,6 +26,7 @@ class _LoginScreenState extends State<SigninPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   late SignInCubit _signInCubit;
+
 
   @override
   void initState() {
@@ -53,6 +57,51 @@ class _LoginScreenState extends State<SigninPage> {
     // final fullPhone = _phoneController.text.trim();
     _signInCubit.login(fullPhone, _passwordController.text);
   }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      await GoogleSignIn().signOut();
+      await FirebaseAuth.instance.signOut();
+
+      // Get Google Sign In account
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return; // user canceled
+
+      // Step 2: Google auth tokens
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Step 3: Firebase credential
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        // accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Step 4: Firebase sign-in
+      UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Step 5: User details
+      print("Firebase UID: ${userCredential.user?.uid}");
+      print("Name: ${userCredential.user?.displayName}");
+      print("Email: ${userCredential.user?.email}");
+      print("Photo: ${userCredential.user?.photoURL}");
+
+      // Step 6: Navigate to dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DashboardFanview()),
+      );
+    } catch (error) {
+      print("Google Sign-In Error: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Google sign-in failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -303,20 +352,24 @@ class _LoginScreenState extends State<SigninPage> {
                           ),
                         ),
                         const SizedBox(width: 20),
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              AppAssets.googleIcon,
-                              height: 24,
+                        GestureDetector(
+                          onTap: _handleGoogleSignIn,
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                AppAssets.googleIcon,
+                                height: 24,
+                              ),
                             ),
                           ),
                         ),
+
                       ],
                     ),
                 
