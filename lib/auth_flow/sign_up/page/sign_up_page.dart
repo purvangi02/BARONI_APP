@@ -1,6 +1,6 @@
-import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/auth_flow/complete_profile/page/complete_profile_page.dart';
 import 'package:baroni_app/auth_flow/sign_in/page/signIn_page.dart';
+import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/services/auth_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';

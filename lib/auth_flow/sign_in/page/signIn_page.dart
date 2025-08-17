@@ -1,6 +1,6 @@
 import 'package:baroni_app/auth_flow/ForgetPassVerificationPage.dart';
 import 'package:baroni_app/auth_flow/sign_up/page/sign_up_page.dart';
-import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
+import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';

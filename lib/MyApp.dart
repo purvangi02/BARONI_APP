@@ -1,4 +1,5 @@
 import 'package:baroni_app/SpalashScreen.dart';
+import 'package:baroni_app/uttils/bottom_bar.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(fontFamily: "General Sans",scaffoldBackgroundColor: Colors.white),
 
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: BottomNavCustom(),
     );
   }
 }

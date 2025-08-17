@@ -1,9 +1,9 @@
+import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:baroni_app/HomeFlow/FanView/Dashboard_Fanview.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
