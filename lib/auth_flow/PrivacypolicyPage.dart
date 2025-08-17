@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage(
       {super.key,
-      required this.phoneNumber,
+        required this.verificationId,
+        required this.phoneNumber,
       required this.isFan,
       this.email,
       required this.password,
       required this.userId});
 
+  final String verificationId;
   final String phoneNumber;
   final bool isFan;
   final String? email;

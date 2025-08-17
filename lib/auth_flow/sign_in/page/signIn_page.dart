@@ -1,6 +1,7 @@
 import 'package:baroni_app/auth_flow/ForgetPassVerificationPage.dart';
 import 'package:baroni_app/auth_flow/sign_up/page/sign_up_page.dart';
 import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
+import 'package:baroni_app/uttils/api_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<SigninPage> {
     }
     final fullPhone = "$countryCode${_phoneController.text.trim()}";
     // final fullPhone = _phoneController.text.trim();
-    _signInCubit.login(fullPhone, _passwordController.text);
+    _signInCubit.login(fullPhone, _passwordController.text,true);
   }
 
   Future<void> _handleGoogleSignIn() async {
@@ -85,12 +86,38 @@ class _LoginScreenState extends State<SigninPage> {
       print("Name: ${userCredential.user?.displayName}");
       print("Email: ${userCredential.user?.email}");
       print("Photo: ${userCredential.user?.photoURL}");
+      
+    var check = await ApiService.checkUser(keyName: 'email',email: userCredential.user!.email.toString());
+    
+    print('check user : ${check!['exists']}');
+    
+    if( check!['exists'] == true) {
+      _signInCubit.login(userCredential.user!.email.toString(), '',false);
+      
+    }else{
+
+      var register = await ApiService.register(
+        contact: '',
+        password: '',
+        email: userCredential.user!.email.toString(),
+      );
+
+      if(register != null && register['success'] == true) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const DashboardFanview()),
+        );
+      } else {
+        print("User registration failed: ${register?['message']}");
+      }
+
+    }
+      
+
+
 
       // Step 6: Navigate to dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const DashboardFanview()),
-      );
+
     } catch (error) {
       print("Google Sign-In Error: $error");
       ScaffoldMessenger.of(context).showSnackBar(

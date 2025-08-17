@@ -7,14 +7,22 @@ import 'dart:io';
 class ApiService {
   static const String baseUrl = 'https://baroni-be.onrender.com/api';
 
-  static Future<Map<String, dynamic>?> login(String contact, String password) async {
+  static Future<Map<String, dynamic>?> login(String contact, String password, bool isMobile) async {
     final url = Uri.parse('$baseUrl/auth/login');
+
+    final body = {
+     isMobile ? 'contact' : 'email': contact,
+      if(password.isNotEmpty)
+      'password': password,
+      'isMobile': isMobile,
+    };
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'contact': contact, 'password': password,'isMobile': true}),
+      body: jsonEncode(body),
     );
-    log(contact);
+    log('contact  $body');
     log(response.body);
 
     if (response.statusCode == 200) {
@@ -25,15 +33,20 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>?> register({
-    required String contact,
-    required String password,
+     String? contact,
+     String? password,
     String? email,
   }) async {
     final url = Uri.parse('$baseUrl/auth/register');
-    final body = {
-      'contact': contact,
-      'password': password,
-    };
+    final body = {};
+
+    if(contact != null && contact.isNotEmpty) {
+      body['contact'] = contact;
+    }
+    if (password != null && password.isNotEmpty) {
+      body['password'] = password;
+    }
+
     if (email != null && email.isNotEmpty) {
       body['email'] = email;
     }
@@ -42,7 +55,7 @@ class ApiService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(body),
     );
-    log(contact);
+    log('Phone :: $contact  password $password email  ${ email ?? ''}');
     log(response.body);
     log(response.statusCode.toString());
 
@@ -123,6 +136,22 @@ class ApiService {
       body: jsonEncode({'contact': contact, 'newPassword': newPassword}),
     );
     log(contact);
+    log(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data;
+    }
+    return null;
+  }
+
+  static Future<Map<String, dynamic>?> checkUser({required String keyName,required String email}) async {
+    final url = Uri.parse('$baseUrl/auth/check-user');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({keyName: email}),
+    );
+    log(email);
     log(response.body);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

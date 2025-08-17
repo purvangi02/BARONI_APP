@@ -16,3 +16,8 @@ final class SignInFailure extends SignInState {
   final String message;
   SignInFailure(this.message);
 }
+
+final class SignInUserExists extends SignInState {
+  final Map<String, dynamic> userData;
+  SignInUserExists(this.userData);
+}

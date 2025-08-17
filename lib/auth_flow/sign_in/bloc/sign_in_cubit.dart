@@ -8,10 +8,10 @@ part 'sign_in_state.dart';
 class SignInCubit extends Cubit<SignInState> {
   SignInCubit() : super(SignInInitial());
 
-  Future<void> login(String contact, String password) async {
+  Future<void> login(String contact, String password,bool isMobile) async {
     emit(SignInLoading());
     try {
-      final response = await ApiService.login(contact, password);
+      final response = await ApiService.login(contact, password,isMobile);
       if (response != null && response['success'] == true) {
         final tokens = response['tokens'];
         final prefs = await SharedPreferences.getInstance();

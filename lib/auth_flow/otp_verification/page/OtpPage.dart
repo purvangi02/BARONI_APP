@@ -114,6 +114,7 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
           // });
 
           // if (!mounted) return;
+
           widget.onOtpVerified();
           Navigator.pop(context);
         }

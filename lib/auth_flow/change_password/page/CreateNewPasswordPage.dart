@@ -203,7 +203,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                     icon: Image.asset(_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
                     onPressed: () {
                       setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                       });
                     },
                   ),

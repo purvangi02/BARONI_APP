@@ -2,6 +2,7 @@ import 'package:baroni_app/auth_flow/complete_profile/page/complete_profile_page
 import 'package:baroni_app/auth_flow/sign_in/page/signIn_page.dart';
 import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/services/auth_service.dart';
+import 'package:baroni_app/uttils/api_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -63,46 +64,66 @@ class _SignUpScreenState extends State<SignupPage> {
     }
     final fullPhone = "$countryCode$raw";
     setState(() => _isChecking = true);
-    await AuthService.instance.verifyPhoneNumber(
-      phoneNumber: fullPhone,
-      onCodeSent: (verificationId, resendToken) {
-        setState(() {
-          _isChecking = false;
-        });
-        // Navigate to OTP verification screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OtpPage(
-              verificationId: verificationId,
-              phoneNumber: fullPhone,
-              isFan: isFan,
-              email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-              password: _passwordController.text,
-              isPasswordReset: false,
-              onOtpVerified: () {
-                // After OTP verified, call registration API
-                _signUpCubit.register(
-                  contact: fullPhone,
-                  password: _passwordController.text,
-                  email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-                );
-              },
+
+    var check = await ApiService.checkUser(keyName: 'contact',email: _phoneController.text.toString());
+
+    if( check!['exists'] == true) {
+      await AuthService.instance.verifyPhoneNumber(
+        phoneNumber: fullPhone,
+        onCodeSent: (verificationId, resendToken) {
+          setState(() {
+            _isChecking = false;
+          });
+          // Navigate to OTP verification screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  OtpPage(
+                    verificationId: verificationId,
+                    phoneNumber: fullPhone,
+                    isFan: isFan,
+                    email: _emailController.text
+                        .trim()
+                        .isEmpty ? null : _emailController.text.trim(),
+                    password: _passwordController.text,
+                    isPasswordReset: false,
+                    onOtpVerified: () {
+                      // After OTP verified, call registration API
+                      _signUpCubit.register(
+                        contact: fullPhone,
+                        password: _passwordController.text,
+                        email: _emailController.text
+                            .trim()
+                            .isEmpty ? null : _emailController.text.trim(),
+                      );
+                    },
+                  ),
             ),
-          ),
-        );
-      },
-      onVerificationFailed: (e) {
-        setState(() => _isChecking = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP send failed: ${e.message}'),behavior: SnackBarBehavior.floating,),
-        );
-      },
-      onVerificationCompleted: null,
-      onCodeAutoRetrievalTimeout: () {
-        setState(() => _isChecking = false);
-      },
-    );
+          );
+        },
+        onVerificationFailed: (e) {
+          setState(() => _isChecking = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('OTP send failed: ${e.message}'),
+              behavior: SnackBarBehavior.floating,),
+          );
+        },
+        onVerificationCompleted: null,
+        onCodeAutoRetrievalTimeout: () {
+          setState(() => _isChecking = false);
+        },
+      );
+    }else {
+      setState(() => _isChecking = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('User already exists'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Future<void> _handleGoogleSignIn() async {
@@ -133,11 +154,45 @@ class _SignUpScreenState extends State<SignupPage> {
       print("Email: ${userCredential.user?.email}");
       print("Photo: ${userCredential.user?.photoURL}");
 
+      var check = await ApiService.checkUser(keyName: 'email',email: userCredential.user!.email.toString());
+
+      print('check user : ${check!['exists']}');
+
+      if( check!['exists'] == true) {
+      var login = await ApiService.login(userCredential.user!.email.toString(), '',false);
+        if(login != null && login['success'] == true) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const DashboardFanview()),
+          );
+        } else {
+          print("User login failed: ${login?['message']}");
+        }
+
+      }else{
+
+        var register = await ApiService.register(
+          contact: '',
+          password: '',
+          email: userCredential.user!.email.toString(),
+        );
+
+        if(register != null && register['success'] == true) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const DashboardFanview()),
+          );
+        } else {
+          print("User registration failed: ${register?['message']}");
+        }
+
+      }
+
+
+
+
       // Step 6: Navigate to dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const DashboardFanview()),
-      );
+
     } catch (error) {
       print("Google Sign-In Error: $error");
       ScaffoldMessenger.of(context).showSnackBar(
