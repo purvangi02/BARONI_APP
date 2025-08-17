@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../bloc/sign_up_cubit.dart';
 import 'package:baroni_app/auth_flow/otp_verification/page/OtpPage.dart';
+import 'package:baroni_app/auth_flow/PrivacypolicyPage.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -67,38 +68,49 @@ class _SignUpScreenState extends State<SignupPage> {
 
     var check = await ApiService.checkUser(keyName: 'contact',email: _phoneController.text.toString());
 
-    if( check!['exists'] == true) {
+    if( check!['exists'] == false) {
       await AuthService.instance.verifyPhoneNumber(
         phoneNumber: fullPhone,
         onCodeSent: (verificationId, resendToken) {
           setState(() {
             _isChecking = false;
           });
-          // Navigate to OTP verification screen
+          // Navigate to Privacy Policy screen first
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  OtpPage(
-                    verificationId: verificationId,
-                    phoneNumber: fullPhone,
-                    isFan: isFan,
-                    email: _emailController.text
-                        .trim()
-                        .isEmpty ? null : _emailController.text.trim(),
-                    password: _passwordController.text,
-                    isPasswordReset: false,
-                    onOtpVerified: () {
-                      // After OTP verified, call registration API
-                      _signUpCubit.register(
-                        contact: fullPhone,
+              builder: (context) => PrivacyPolicyPage(
+                verificationId: verificationId,
+                phoneNumber: fullPhone,
+                isFan: isFan,
+                email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+                password: _passwordController.text,
+                userId: '', // Not used here
+                // After privacy, go to OTP page
+                onAccepted: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OtpPage(
+                        verificationId: verificationId,
+                        phoneNumber: fullPhone,
+                        isFan: isFan,
+                        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
                         password: _passwordController.text,
-                        email: _emailController.text
-                            .trim()
-                            .isEmpty ? null : _emailController.text.trim(),
-                      );
-                    },
-                  ),
+                        isPasswordReset: false,
+                        onOtpVerified: () {
+                          // After OTP verified, call registration API
+                          _signUpCubit.register(
+                            contact: fullPhone,
+                            password: _passwordController.text,
+                            email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },
@@ -376,7 +388,7 @@ class _SignUpScreenState extends State<SignupPage> {
                     decoration: InputDecoration(
                       prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                       suffixIcon: IconButton(
-                        icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
+                        icon: Image.asset(obscurePassword ? AppAssets.eyeOffIcon : AppAssets.eyeOnIcon,scale: 4,),
                         onPressed: () {
                           setState(() {
                             obscurePassword = !obscurePassword;
@@ -414,7 +426,7 @@ class _SignUpScreenState extends State<SignupPage> {
                     decoration: InputDecoration(
                       prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                       suffixIcon: IconButton(
-                          icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
+                          icon: Image.asset(obscureConfirmPassword ?AppAssets.eyeOffIcon : AppAssets.eyeOnIcon,scale: 4,),
                         onPressed: () {
                           setState(() {
                             obscureConfirmPassword = !obscureConfirmPassword;

@@ -9,6 +9,7 @@ class AppAssets {
   static const String googleIcon = 'assets/icons/google_icon.png';
   static const String appleIcon = 'assets/icons/apple_icon.png';
   static const String eyeOffIcon = 'assets/icons/eye_off.png';
+  static const String eyeOnIcon = 'assets/icons/eye_on.png';
   static const String bottomBarIcon = 'assets/icons/bottom_bar.png';
   static const String exploreOnIcon = 'assets/icons/explore_on.png';
   static const String exploreOffIcon = 'assets/icons/explore_off.png';

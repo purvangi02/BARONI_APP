@@ -2,14 +2,16 @@ import 'package:baroni_app/uttils/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
-  const PrivacyPolicyPage(
-      {super.key,
-        required this.verificationId,
-        required this.phoneNumber,
-      required this.isFan,
-      this.email,
-      required this.password,
-      required this.userId});
+  const PrivacyPolicyPage({
+    super.key,
+    required this.verificationId,
+    required this.phoneNumber,
+    required this.isFan,
+    this.email,
+    required this.password,
+    required this.userId,
+    required this.onAccepted,
+  });
 
   final String verificationId;
   final String phoneNumber;
@@ -17,6 +19,7 @@ class PrivacyPolicyPage extends StatelessWidget {
   final String? email;
   final String password;
   final String userId;
+  final VoidCallback onAccepted;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +89,23 @@ class PrivacyPolicyPage extends StatelessWidget {
                             color: AppColors.grey76, fontSize: 14, height: 1.5),
                       ),
                     ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: onAccepted,
+                  child: const Text(
+                    "Accept & Continue",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
               ),

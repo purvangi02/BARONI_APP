@@ -263,7 +263,7 @@ class _LoginScreenState extends State<SigninPage> {
                       decoration: InputDecoration(
                         prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                         suffixIcon: IconButton(
-                          icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
+                          icon: Image.asset(obscurePassword ?AppAssets.eyeOffIcon : AppAssets.eyeOnIcon,scale: 4,),
                           onPressed: () {
                             setState(() {
                               obscurePassword = !obscurePassword;

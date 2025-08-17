@@ -114,6 +114,10 @@ class ApiService {
       request.files.add(await http.MultipartFile.fromPath('profilePic', profilePic.path));
     }
 
+    log(accessToken);
+    log(request.fields.toString());
+    log(request.files.length.toString());
+
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
     log(response.body);

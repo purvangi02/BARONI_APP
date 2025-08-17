@@ -161,7 +161,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                   hintText: "New Password",
                   prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                   suffixIcon: IconButton(
-                    icon: Image.asset(_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
+                    icon: Image.asset(!_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOnIcon,scale: 4,),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
@@ -200,7 +200,7 @@ class _CreateNewPasswordScreenState extends State<CreateNewPassword> {
                   hintText: "Confirm New Password",
                   prefixIcon: Image.asset(AppAssets.lockIcon,scale: 4,),
                   suffixIcon: IconButton(
-                    icon: Image.asset(_isPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOffIcon,scale: 4,),
+                    icon: Image.asset(!_isConfirmPasswordVisible ?AppAssets.eyeOffIcon : AppAssets.eyeOnIcon,scale: 4,),
                     onPressed: () {
                       setState(() {
                         _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
