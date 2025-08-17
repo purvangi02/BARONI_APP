@@ -11,7 +11,8 @@ class BottomNavCustom extends StatefulWidget {
   State<BottomNavCustom> createState() => _BottomNavCustomState();
 }
 
-class _BottomNavCustomState extends State<BottomNavCustom> {
+class _BottomNavCustomState extends State<BottomNavCustom>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
   final List<String> _iconsOn = [
@@ -64,7 +65,7 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
               color: Colors.black.withOpacity(0.05),
               spreadRadius: 0,
               blurRadius: 6,
-              offset: const Offset(0, -1), // creates the soft top shadow line
+              offset: const Offset(0, -1),
             ),
           ],
         ),
@@ -78,30 +79,53 @@ class _BottomNavCustomState extends State<BottomNavCustom> {
                   _selectedIndex = index;
                 });
               },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  isSelected ? Image.asset(AppAssets.bottomBarIcon,height: 10,) : const SizedBox(),
-                  const SizedBox(height: 5,),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    child: Image.asset(
-                    isSelected ? _iconsOn[index] : _iconsOff[index], // Use your asset path here
-                      height: 22,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutBack,
+                // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Top indicator
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 300),
+                      opacity: isSelected ? 1.0 : 0.0,
+                      child: Image.asset(
+                        AppAssets.bottomBarIcon,
+                        height: 10,
+                      ),
                     ),
-                  ),
-                  // const SizedBox(height: 2),
-                  isSelected
-                      ? Text(
-                    _labels[index],
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    const SizedBox(height: 5),
+                    // Icon with scale animation
+                    AnimatedScale(
+                      scale: isSelected ? 1.1 : 0.9,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOutBack,
+                      child: Image.asset(
+                        isSelected ? _iconsOn[index] : _iconsOff[index],
+                        height: 24,
+                      ),
                     ),
-                  )
-                      : const SizedBox(height: 14),
-                ],
+                    const SizedBox(height: 4),
+                    // Animated label
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) =>
+                          FadeTransition(opacity: animation, child: child),
+                      child: isSelected
+                          ? Text(
+                        _labels[index],
+                        key: ValueKey(_labels[index]),
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                          : const SizedBox(height: 14),
+                    ),
+                  ],
+                ),
               ),
             );
           }),

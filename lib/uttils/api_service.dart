@@ -4,6 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
+enum ApiStatus {
+  success,
+  failure,
+  loading,
+}
+
 class ApiService {
   static const String baseUrl = 'https://baroni-be.onrender.com/api';
 
@@ -108,7 +114,7 @@ class ApiService {
     request.fields['preferredLanguage'] = preferredLanguage;
     request.fields['country'] = country;
     request.fields['email'] = email;
-    request.fields['contact'] = contact;
+    // request.fields['contact'] = contact;
 
     if (profilePic != null) {
       request.files.add(await http.MultipartFile.fromPath('profilePic', profilePic.path));

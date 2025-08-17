@@ -37,10 +37,12 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
   late Timer _timer;
   String _smsCode = '';
   bool _submitting = false;
+  String? _currentVerificationId;
 
   @override
   void initState() {
     super.initState();
+    _currentVerificationId = widget.verificationId;
     _startTimer();
   }
 
@@ -56,6 +58,42 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
     });
   }
 
+  Future<void> _resendOtp() async {
+    if (_secondsRemaining > 0) return;
+    setState(() {
+      _secondsRemaining = 20;
+    });
+    _startTimer();
+
+    await AuthService.instance.verifyPhoneNumber(
+      phoneNumber: widget.phoneNumber,
+      onCodeSent: (verificationId, [forceResendingToken]) {
+        setState(() {
+          _currentVerificationId = verificationId;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('OTP resent successfully'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+      onVerificationCompleted: (credential) async {
+        // Optionally handle auto-verification
+      },
+      onVerificationFailed: (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to resend OTP: ${e.message}'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -68,14 +106,10 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
     setState(() => _submitting = true);
     try {
       if (widget.isPasswordReset) {
-
-        // For password reset, verify with Firebase
         final userCred = await AuthService.instance.signInWithSmsCode(
-          verificationId: widget.verificationId,
+          verificationId: _currentVerificationId ?? widget.verificationId,
           smsCode: _smsCode,
         );
-
-        // Save user profile with password reset
         if(userCred.user != null) {
           Navigator.pushReplacement(
             context,
@@ -87,34 +121,16 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
             ),
           );
         }
-
       } else {
-        // For signup, verify with Firebase
-        if (widget.verificationId == "auto") {
-          // Auto-verification case, proceed to profile
+        if (_currentVerificationId == "auto") {
           if (!mounted) return;
           widget.onOtpVerified();
           Navigator.pop(context);
         } else {
-          // Manual verification with Firebase
           final userCred = await AuthService.instance.signInWithSmsCode(
-            verificationId: widget.verificationId,
+            verificationId: _currentVerificationId ?? widget.verificationId,
             smsCode: _smsCode,
           );
-
-          // // Save user profile
-          // await AuthService.instance.saveUserProfile({
-          //   'uid': userCred.user!.uid,
-          //   'phoneNumber': widget.phoneNumber,
-          //   'email': widget.email,
-          //   'password': widget.password,
-          //   'role': widget.isFan ? 'fan' : 'star',
-          //   'createdAt': FieldValue.serverTimestamp(),
-          //   'updatedAt': FieldValue.serverTimestamp(),
-          // });
-
-          // if (!mounted) return;
-
           widget.onOtpVerified();
           Navigator.pop(context);
         }
@@ -142,7 +158,6 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: AppColors.greyF5,
-
       ),
     );
 
@@ -223,9 +238,19 @@ class _ForgotPasswordScreenState extends State<OtpPage> {
                 onCompleted: (pin) => _smsCode = pin,
               ),
               const SizedBox(height: 16),
-              Text(
-                "Send code again  00.${_secondsRemaining.toString().padLeft(2, '0')}",
-                style:  TextStyle(color: AppColors.primaryColor),
+              GestureDetector(
+                onTap: _secondsRemaining == 0 ? _resendOtp : null,
+                child: Text(
+                  _secondsRemaining == 0
+                      ? "Resend code"
+                      : "Send code again  00.${_secondsRemaining.toString().padLeft(2, '0')}",
+                  style: TextStyle(
+                    color: _secondsRemaining == 0
+                        ? AppColors.primaryColor
+                        : AppColors.primaryColor.withOpacity(0.5),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
               const Spacer(),
               SizedBox(

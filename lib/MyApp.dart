@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(fontFamily: "General Sans",scaffoldBackgroundColor: Colors.white),
 
       debugShowCheckedModeBanner: false,
-      home: OnboardingScreen(),
+      home: SplashScreen(),
     );
   }
 }

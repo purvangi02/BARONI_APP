@@ -4,6 +4,7 @@ import 'package:baroni_app/home/FanView/Dashboard_Fanview.dart';
 import 'package:baroni_app/uttils/api_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
+import 'package:baroni_app/uttils/bottom_bar.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +106,7 @@ class _LoginScreenState extends State<SigninPage> {
       if(register != null && register['success'] == true) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const DashboardFanview()),
+          MaterialPageRoute(builder: (_) => const BottomNavCustom()),
         );
       } else {
         print("User registration failed: ${register?['message']}");
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<SigninPage> {
           if (state is SignInSuccess) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (_) => const DashboardFanview()),
+              MaterialPageRoute(builder: (_) => const BottomNavCustom()),
               (route) => false,
             );
           } else if (state is SignInFailure) {

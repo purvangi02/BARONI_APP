@@ -5,6 +5,7 @@ import 'package:baroni_app/services/auth_service.dart';
 import 'package:baroni_app/uttils/api_service.dart';
 import 'package:baroni_app/uttils/app_assets.dart';
 import 'package:baroni_app/uttils/app_colors.dart';
+import 'package:baroni_app/uttils/bottom_bar.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +176,7 @@ class _SignUpScreenState extends State<SignupPage> {
         if(login != null && login['success'] == true) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const DashboardFanview()),
+            MaterialPageRoute(builder: (_) => const BottomNavCustom()),
           );
         } else {
           print("User login failed: ${login?['message']}");
@@ -192,7 +193,7 @@ class _SignUpScreenState extends State<SignupPage> {
         if(register != null && register['success'] == true) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const DashboardFanview()),
+            MaterialPageRoute(builder: (_) => const BottomNavCustom()),
           );
         } else {
           print("User registration failed: ${register?['message']}");
